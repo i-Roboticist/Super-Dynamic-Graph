@@ -18,8 +18,7 @@ const Graph = () => {
   const SPRING_STIFFNESS = 0.02;
   const REPULSION_FORCE = 10000;
   const DAMPING = 0.95;
-  const MAX_SPEED = 20; // Pixels per frame
-
+  const MAX_SPEED = 20;
 
   // Fetch and initialize graph data
   useEffect(() => {
@@ -42,63 +41,64 @@ const Graph = () => {
 
   // Animation loop
   useEffect(() => {
-  const animate = () => {
-    setNodes(currentNodes => {
-      return currentNodes.map(node => {
-        if (draggingNode.current === node.id) return node;
+    const animate = () => {
+      setNodes(currentNodes => {
+        return currentNodes.map(node => {
+          if (draggingNode.current === node.id) return node;
 
-        let newVx = node.vx * DAMPING;
-        let newVy = node.vy * DAMPING;
+          let newVx = node.vx * DAMPING;
+          let newVy = node.vy * DAMPING;
 
-        // Node repulsion calculations
-        currentNodes.forEach(other => {
-          if (node.id === other.id) return;
-          const dx = node.x - other.x;
-          const dy = node.y - other.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          const force = REPULSION_FORCE / (distance * distance);
-          
-          newVx += (dx / distance) * force;
-          newVy += (dy / distance) * force;
+          // Node repulsion
+          currentNodes.forEach(other => {
+            if (node.id === other.id) return;
+            const dx = node.x - other.x;
+            const dy = node.y - other.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const force = REPULSION_FORCE / (distance * distance);
+            
+            newVx += (dx / distance) * force;
+            newVy += (dy / distance) * force;
+          });
+
+          // Spring forces
+          node.connections.forEach(connectedId => {
+            const other = currentNodes.find(n => n.id === connectedId);
+            if (!other) return;
+            const dx = other.x - node.x;
+            const dy = other.y - node.y;
+            newVx += dx * SPRING_STIFFNESS;
+            newVy += dy * SPRING_STIFFNESS;
+          });
+
+          // Speed cap
+          const speed = Math.sqrt(newVx ** 2 + newVy ** 2);
+          if (speed > MAX_SPEED) {
+            newVx = (newVx / speed) * MAX_SPEED;
+            newVy = (newVy / speed) * MAX_SPEED;
+          }
+
+          return {
+            ...node,
+            x: node.x + newVx,
+            y: node.y + newVy,
+            vx: newVx,
+            vy: newVy
+          };
         });
-
-        // Spring forces from connections
-        node.connections.forEach(connectedId => {
-          const other = currentNodes.find(n => n.id === connectedId);
-          if (!other) return;
-          const dx = other.x - node.x;
-          const dy = other.y - node.y;
-          newVx += dx * SPRING_STIFFNESS;
-          newVy += dy * SPRING_STIFFNESS;
-        });
-
-        // Speed capping
-        const speed = Math.sqrt(newVx ** 2 + newVy ** 2);
-        if (speed > MAX_SPEED) {
-          newVx = (newVx / speed) * MAX_SPEED;
-          newVy = (newVy / speed) * MAX_SPEED;
-        }
-
-        return {
-          ...node,
-          x: node.x + newVx,
-          y: node.y + newVy,
-          vx: newVx,
-          vy: newVy
-        };
       });
-    });
 
-    animationRef.current = requestAnimationFrame(animate);
-  };
+      animationRef.current = requestAnimationFrame(animate);
+    };
 
-  if (!isLoading && !isError) {
-    animationRef.current = requestAnimationFrame(animate);
-  }
+    if (!isLoading && !isError) {
+      animationRef.current = requestAnimationFrame(animate);
+    }
 
-  return () => cancelAnimationFrame(animationRef.current);
-}, [isLoading, isError]);
+    return () => cancelAnimationFrame(animationRef.current);
+  }, [isLoading, isError]);
 
+  // Drag handlers
   const handleMouseDown = (nodeId, e) => {
     const svg = svgRef.current;
     const pt = svg.createSVGPoint();
@@ -125,15 +125,15 @@ const Graph = () => {
     pt.y = e.clientY;
     const { x: mouseX, y: mouseY } = pt.matrixTransform(svg.getScreenCTM().inverse());
 
-    setNodes(currentNodes => currentNodes.map(node => {
-      return node.id === draggingNode.current ? {
+    setNodes(currentNodes => currentNodes.map(node => 
+      node.id === draggingNode.current ? {
         ...node,
         x: mouseX - offset.current.x,
         y: mouseY - offset.current.y,
         vx: 0,
         vy: 0
-      } : node;
-    }));
+      } : node
+    ));
   };
 
   const handleMouseUp = () => {
@@ -142,21 +142,8 @@ const Graph = () => {
     window.removeEventListener('mouseup', handleMouseUp);
   };
 
-  if (isLoading) {
-    return (
-      <div className="graph-loading">
-        <div className="loading-message">Loading graph visualization...</div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="graph-error">
-        <div className="error-message">Failed to load graph data</div>
-      </div>
-    );
-  }
+  if (isLoading) return <div className="graph-loading">Loading graph visualization...</div>;
+  if (isError) return <div className="graph-error">Failed to load graph data</div>;
 
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
@@ -167,6 +154,16 @@ const Graph = () => {
         height="100%"
         style={{ backgroundColor: '#1a1a1a' }}
       >
+        <defs>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        
         {edges.map(edge => (
           <Edge
             key={`${edge.from}-${edge.to}`}

@@ -1,17 +1,37 @@
+import { useState } from 'react';
+
 const Node = ({ x, y, color, icon, onMouseDown }) => {
+  const [isHovered, setIsHovered] = useState(false);
   const ICON_SIZE = 24;
   const NODE_RADIUS = 20;
 
   return (
-    <g transform={`translate(${x},${y})`}>
+    <g 
+      transform={`translate(${x},${y})`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{ cursor: 'grab' }}
+    >
+      {/* Glow effect */}
+      {isHovered && (
+        <circle
+          r={NODE_RADIUS + 5}
+          fill={color || '#ff4444'}
+          opacity="0.3"
+          filter="url(#glow)"
+        />
+      )}
+      
+      {/* Main circle */}
       <circle
         r={NODE_RADIUS}
         fill={color || '#ff4444'}
         stroke="#fff"
         strokeWidth="2"
         onMouseDown={onMouseDown}
-        style={{ cursor: 'grab' }}
       />
+      
+      {/* Icon */}
       {icon && (
         <image
           href={icon}
@@ -20,7 +40,7 @@ const Node = ({ x, y, color, icon, onMouseDown }) => {
           width={ICON_SIZE}
           height={ICON_SIZE}
           preserveAspectRatio="xMidYMid meet"
-          pointerEvents="none" // Add this line
+          pointerEvents="none"
         />
       )}
     </g>
