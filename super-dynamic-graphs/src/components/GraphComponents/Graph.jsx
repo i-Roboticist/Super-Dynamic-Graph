@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Node from './Node';
 import Edge from './Edge';
-import { fetchGraphData, transformGraphData } from '../utils/graphUtils';
+import { fetchGraphData, transformGraphData } from '../../utils/graphUtils';
 
 const Graph = () => {
   const [nodes, setNodes] = useState([]);
