@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Node from './Node';
 import Edge from './Edge';
+import NodeSidebar from '../NodeSidebar/NodeSidebar';
 import { fetchGraphData, transformGraphData } from '../../utils/graphUtils';
 
 const Graph = () => {
@@ -8,6 +9,8 @@ const Graph = () => {
   const [edges, setEdges] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [nodeContent, setNodeContent] = useState(null);
 
   const svgRef = useRef(null);
   const animationRef = useRef();
@@ -49,7 +52,7 @@ const Graph = () => {
           let newVx = node.vx * DAMPING;
           let newVy = node.vy * DAMPING;
 
-          // Node repulsion
+          // Node repulsion calculations
           currentNodes.forEach(other => {
             if (node.id === other.id) return;
             const dx = node.x - other.x;
@@ -61,7 +64,7 @@ const Graph = () => {
             newVy += (dy / distance) * force;
           });
 
-          // Spring forces
+          // Spring forces from connections
           node.connections.forEach(connectedId => {
             const other = currentNodes.find(n => n.id === connectedId);
             if (!other) return;
@@ -71,7 +74,7 @@ const Graph = () => {
             newVy += dy * SPRING_STIFFNESS;
           });
 
-          // Speed cap
+          // Speed capping
           const speed = Math.sqrt(newVx ** 2 + newVy ** 2);
           if (speed > MAX_SPEED) {
             newVx = (newVx / speed) * MAX_SPEED;
@@ -142,6 +145,20 @@ const Graph = () => {
     window.removeEventListener('mouseup', handleMouseUp);
   };
 
+  // Node click handler for sidebar
+  const handleNodeClick = (nodeId) => {
+    const node = nodes.find(n => n.id === nodeId);
+    if (node) {
+      setSelectedNode(nodeId);
+      setNodeContent({
+        name: node.name,
+        difficulty: node.difficulty,
+        prerequisites: node.prerequisites,
+        videoId: node.videoId
+      });
+    }
+  };
+
   if (isLoading) return <div className="graph-loading">Loading graph visualization...</div>;
   if (isError) return <div className="graph-error">Failed to load graph data</div>;
 
@@ -177,9 +194,16 @@ const Graph = () => {
             key={node.id}
             {...node}
             onMouseDown={(e) => handleMouseDown(node.id, e)}
+            onClick={() => handleNodeClick(node.id)}
           />
         ))}
       </svg>
+
+      <NodeSidebar
+        isVisible={!!selectedNode}
+        content={nodeContent}
+        onClose={() => setSelectedNode(null)}
+      />
     </div>
   );
 };

@@ -2,7 +2,7 @@ import Graph from './components/GraphComponents/Graph';
 
 function App() {
   return (
-    <div>
+    <div className="app-container">
       <Graph />
     </div>
   );
