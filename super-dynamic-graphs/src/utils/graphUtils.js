@@ -44,7 +44,7 @@ export const fetchGraphData = async () => {
         name: 'Derivatives',
         difficulty: 'Intermediate',
         prerequisites: ['Algebra Basics', 'Limits'],
-        videoId: 'd1YE6r2DcJo'
+        videoId: 'WUvTyaaNkzM'  // Updated video ID
       },
       { 
         id: 2,
@@ -55,7 +55,7 @@ export const fetchGraphData = async () => {
         name: 'Integrals',
         difficulty: 'Advanced',
         prerequisites: ['Derivatives', 'Limits'],
-        videoId: 'rfG8ce4nNh0'
+        videoId: 'rfG8ce4nNh0'  // Correct video ID
       },
       { 
         id: 3,
@@ -66,7 +66,7 @@ export const fetchGraphData = async () => {
         name: 'Differential Equations',
         difficulty: 'Expert',
         prerequisites: ['Derivatives', 'Integrals'],
-        videoId: 'p_di4Zn4wz4'
+        videoId: 'p_di4Zn4wz4'  // Correct video ID
       }
     ],
     edges: [

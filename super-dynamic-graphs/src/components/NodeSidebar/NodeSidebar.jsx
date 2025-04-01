@@ -39,7 +39,16 @@ const NodeSidebar = ({ isVisible, content, onClose }) => {
         <h3>Video Lesson</h3>
         <div className="video-preview">
           {content?.videoId ? (
-            <div className="video-placeholder" />
+            <iframe
+              width="100%"
+              height="100%"
+              src={`https://www.youtube.com/embed/${content.videoId}`}
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ borderRadius: '8px' }}
+            />
           ) : (
             <p>No video available</p>
           )}
