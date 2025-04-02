@@ -1,3 +1,5 @@
+import derivativesIcon from "../assets/derivatives.svg"
+
 export const transformGraphData = (apiData) => {
   const nodes = (apiData.nodes || []).map(node => ({
     id: node.id,

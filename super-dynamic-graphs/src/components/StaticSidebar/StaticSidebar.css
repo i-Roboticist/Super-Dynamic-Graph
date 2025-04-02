@@ -21,13 +21,16 @@
     justify-content: center;
     width: 3rem;
     height: 3rem;
+    background-color: #2a2a2a; /* Distinct resting background */
     border-radius: 0.5rem;
     cursor: pointer;
     transition: all 0.3s ease;
+    color: white; /* Icon color at rest */
 }
 
 .sidebar-icon:hover {
-    background-color: #363636;
+    background-color: #ffffff; /* White-ish background on hover */
+    color: #1e1e1e; /* Change icon color to maintain contrast */
     border-radius: 0.75rem;
 }
 
@@ -41,15 +44,17 @@
     position: absolute;
     left: 4rem;
     background-color: #1e1e1e;
+    color: white; /* explicitly set tooltip text color */
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     white-space: nowrap;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.2s ease;
+    /* limit transition to only opacity, transform, and visibility */
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
     pointer-events: none;
     box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
-}
+  }
 
 .sidebar-tooltip::before {
     content: "";
