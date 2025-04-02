@@ -61,3 +61,13 @@
     border-style: solid;
     border-color: transparent #1e1e1e transparent transparent;
 }
+
+.sidebar-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Add this to remove default link styles */
+.sidebar-link:hover, .sidebar-link:visited, .sidebar-link:active {
+    color: inherit;
+}
