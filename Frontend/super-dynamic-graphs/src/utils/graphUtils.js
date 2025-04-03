@@ -42,7 +42,7 @@ export const fetchGraphData = async () => {
         x: 300,
         y: 400,
         color: '#ff4444',
-        icon: 'https://cdn-icons-png.flaticon.com/512/25/25231.png',
+        icon: derivativesIcon,
         name: 'Derivatives',
         difficulty: 'Intermediate',
         prerequisites: ['Algebra Basics', 'Limits'],
